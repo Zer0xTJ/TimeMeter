@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;700&display=swap');
+
+:root{
+    --primary-color: #70b5eb;
+    --secondary-color: #35698e;
+}
+
+*{
+    font-family: 'Ubuntu', sans-serif;
+}
+
+body,html{
+    background-color: #1b1b1b;
+    color: white;
+}
+
+.small-txt{
+    font-size: 12px;
+}
+.large-txt{
+    font-size: 40px;
+    font-weight: bold;
+}
+.btn, .red-btn{
+    background-color: var(--primary-color);
+    color: black;
+    border: 0px;
+    border-radius: 5px;
+    padding: 4px 10px;
+    font-size: 1.5em;
+    cursor: pointer;
+    font-weight: bold;
+    width: fit-content;
+    box-shadow: 0px 2px 5px black;
+    transition: all 0.3s ease-in-out;
+}
+
+
+.red-btn{
+    color: white;
+    background-color: #7b1616;
+}
+
+.btn:hover{
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.red-btn:hover{
+    background-color: #570d0d;
+    color: white;
+}
+
+button{
+    transition: all 0.3s ease-in-out;
+}
+button:hover{
+    transform: scale(1.04);
+}
+
+#projects-container{
+    width: 90%;
+}
+
+.project-card{
+    background-color: #303030;
+    padding: 0px 10px 10px 10px;
+    display: flex;
+    flex-direction: column;
+    line-height: 0.5;
+    width: 100%;
+    border-radius: 10px;
+    border-left: 5px solid #000000;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 2px 5px black;
+}
+
+.project-card:hover {
+    border-left: 5px solid var(--primary-color);
+    transform: scale(1.02);
+}
+
+.project-name{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+}
+
+#project-list, #current{
+    display: flex;
+    flex-direction: column;
+    line-height: 0.5;
+    padding: 10px;
+    align-items: center;
+}
+
+h1{
+    color: var(--primary-color);
+}
+
