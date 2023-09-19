@@ -3,6 +3,12 @@
 :root{
     --primary-color: #70b5eb;
     --secondary-color: #35698e;
+    
+    --primary-red: #902626;
+    --secondary-red: #691111;
+
+    --primary-orange: #d2680b;
+    --secondary-orange: #b72700;
 }
 
 *{
@@ -24,7 +30,7 @@ body,html{
 .btn, .red-btn{
     background-color: var(--primary-color);
     color: black;
-    border: 0px;
+    border: 0;
     border-radius: 5px;
     padding: 4px 10px;
     font-size: 1.5em;
@@ -51,10 +57,10 @@ body,html{
     color: white;
 }
 
-button{
+.btn, .red-btn{
     transition: all 0.3s ease-in-out;
 }
-button:hover{
+.btn, .red-btn:hover{
     transform: scale(1.04);
 }
 
@@ -68,7 +74,7 @@ button:hover{
     margin: 10px 0px;
     position: relative;
     background-color: #303030;
-    padding: 0px 10px 10px 10px;
+    padding: 0px;
     display: flex;
     flex-direction: column;
     line-height: 1;
@@ -78,6 +84,9 @@ button:hover{
     cursor: pointer;
     transition: all 0.3s ease-in-out;
     box-shadow: 0px 2px 5px black;
+}
+.project-info{
+    padding: 5px 10px;
 }
 
 .project-card:hover {
@@ -145,11 +154,68 @@ h1{
     background-color: var(--secondary-color);
 }
 
+.bg-primary{
+    transition: all 0.3s ease-in-out;
+    background-color: var(--primary-color);
+    color: black;
+}
+
+.bg-primary:hover{
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+
+.bg-red{
+    transition: all 0.3s ease-in-out;
+    background-color: var(--primary-red);
+    color: white;
+}
+
+.bg-red:hover{
+    background-color: var(--secondary-red);
+    color: white;
+}
+
+
+.bg-orange{
+    transition: all 0.3s ease-in-out;
+    background-color: var(--primary-orange);
+    color: white;
+}
+
+.bg-orange:hover{
+    background-color: var(--secondary-orange);
+}
+
 .row{
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 8px;
+}
+
+.action-buttons{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 50%;
+    align-self: end;
+    margin: 8px;
+    gap: 4px;
+}
+
+.action-btn{
+    width: 33.33%;
+    border: 0px;
+    padding: 5px;
+    border-radius: 5px;
+    text-transform: uppercase;
+}
+
+button{
+    cursor: pointer;
 }
 
 
