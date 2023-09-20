@@ -15,21 +15,20 @@
     <meta charset="UTF-8">
     <title>Time Meter For Projects</title>
     <link rel="stylesheet" href="main.css"/>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 </head>
 <body>
 <div id="current">
     <span class="small-txt">Current Project</span>
     <div class="project-name">
-        <h1>Project X</h1>
+        <h2>${this.name} (<span class="price">$${this.hourPrice}</span>)</h2>
     </div>
-    <span class="large-txt">
-        00:00:00
-    </span>
+    <span class="large-txt">${this.getTimeAndPriceString()}</span>
     <br/>
     <br/>
     <br/>
-    <button class="btn">START</button>
+    <button class="red-btn">STOP</button>
 </div>
 <br/>
 <hr/>
@@ -40,21 +39,6 @@
         <span onclick="addProject()" class="add-btn">+</span>
     </div>
     <div id="projects-container">
-        <div class="project-card">
-            <div class="project-info">
-                <h2>This is a long name of Project Z (<span class="price">$3.99</span>)</h2>
-                <div class="time-info">
-                    <span class="small-txt">00:00:00</span>
-                    =
-                    <span class="small-txt">99$</span>
-                </div>
-            </div>
-            <div class="action-buttons">
-                <button class="action-btn bg-primary">Start</button>
-                <button class="action-btn bg-orange">Reset</button>
-                <button class="action-btn bg-red">Delete</button>
-            </div>
-        </div>
     </div>
 </div>
 <script src="main.js"></script>
