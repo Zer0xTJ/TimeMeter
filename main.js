@@ -1,52 +1,85 @@
-// name (input)
-// hourPrice (input)
-// totalTime
-// getPrice() -> totalHours * hourPrice
-
 let projects = [];
 let currentProject;
+let timer;
 
 // when the page loads, load all projects
 $(document).ready(() => {
-    loadProjects();
-    updateUI();
+  loadProjects();
+  updateUI();
 });
-
 
 /**
  * @description save projects
  */
 function saveProjects() {
-    let projectsString = JSON.stringify(projects);
-    localStorage.setItem("projects", projectsString);
+  let projectsString = JSON.stringify(projects);
+  localStorage.setItem("projects", projectsString);
+
+  if (currentProject) {
+    localStorage.setItem("currentProject", JSON.stringify(currentProject));
+  }
 }
 
 /**
  * @description Load Projects from local storage
  */
 function loadProjects() {
-    let projectsString = localStorage.getItem("projects")
-    projects = projectsString != null ? JSON.parse(projectsString) : [];
-    // convert objects to Project instances
-    projects = projects.map(obj => new Project(obj.name, obj.hourPrice, obj.totalTimeInSeconds));
-    // projects.push(new Project("Demo", 22, 1800))
-    updateProjectList();
+  let projectsString = localStorage.getItem("projects");
+  projects = projectsString != null ? JSON.parse(projectsString) : [];
+  // convert objects to Project instances
+  projects = projects.map((obj) => new Project(obj.name, obj.hourPrice, obj.totalTimeInSeconds));
+  updateProjectList();
+
+  // load current project
+  let currentProjectStr = localStorage.getItem("currentProject");
+  let parsedCurrentProject = currentProjectStr ? JSON.parse(currentProjectStr) : null;
+  if (parsedCurrentProject) {
+    currentProject = projects.find((p) => p.name === parsedCurrentProject.name);
+  }
 }
 
-function startProject(name) {
-    let msg = "Are you sure you want to start project [" + name + "] ?";
-    let confirm = window.confirm(msg);
-    if (!confirm) return;
+/**
+ * @description stop the timer of the current project
+ */
+function stopCurrentProject() {
+  // check if there is a current project
+  if (!currentProject) return;
 
-    let proj = projects.find(p => p.name === name);
-    if (!proj) {
-        alert("Project not found!");
-        return;
-    }
-    currentProject = proj;
-    updateUI(false);
-    // TODO: start project timer
-    // startProjectTimer();
+  // currrent project has a value
+  let msg = "Are you sure you want to stop project [" + currentProject.name + "] ?";
+  let confirm = window.confirm(msg);
+  if (!confirm) return;
+
+  // stop current project interval
+  currentProject.stopInterval();
+  updateUI(false);
+}
+
+/**
+ * @description start the timer of the project by its name
+ * @param {string} name the name of the project
+ */
+function startProject(name) {
+  let msg = "Are you sure you want to start project [" + name + "] ?";
+  let confirm = window.confirm(msg);
+  if (!confirm) return;
+
+  // stop current project interval
+  if (currentProject) {
+    currentProject.stopInterval();
+  }
+
+  // change current project
+  let proj = projects.find((p) => p.name === name);
+  if (!proj) {
+    alert("Project not found!");
+    return;
+  }
+  currentProject = proj;
+
+  // start current project interval
+  updateUI(false);
+  currentProject.startInterval();
 }
 
 /**
@@ -54,141 +87,199 @@ function startProject(name) {
  * @param name the name of the project
  */
 function resetProject(name) {
-    let msg = "Are you sure you want to reset the time of project [" + name + "] ?";
-    let confirm = window.confirm(msg);
-    if (!confirm) return;
+  let msg = "Are you sure you want to reset the time of project [" + name + "] ?";
+  let confirm = window.confirm(msg);
+  if (!confirm) return;
 
-    let proj = projects.find(p => p.name === name);
-    if (!proj) {
-        alert("Project not found!");
-        return;
-    }
-    // found
-    proj.reset();
-    // update ui and local storage
-    updateUI(true);
+  let proj = projects.find((p) => p.name === name);
+  if (!proj) {
+    alert("Project not found!");
+    return;
+  }
+  // found
+  proj.reset();
+  // update ui and local storage
+  updateUI(true);
 }
-
 
 /**
  * @description delete project by name
  * @param name the name of the project
  */
 function deleteProject(name) {
-    let msg = "Are you sure you want to delete project [" + name + "] ?";
-    let confirm = window.confirm(msg);
-    if (!confirm) return;
-    projects = projects.filter(p => p.name != name);
-    updateUI(true);
+  let msg = "Are you sure you want to delete project [" + name + "] ?";
+  let confirm = window.confirm(msg);
+  if (!confirm) return;
+
+  // check if the current project is the same as the one we want to delete
+  // then stop the current project
+  // then empty current project
+  let foundProject = projects.find((p) => p.name === name);
+  if (foundProject.name === currentProject?.name) {
+    stopCurrentProject();
+    currentProject = null;
+  }
+  // delete priejct
+  projects = projects.filter((p) => p.name != name);
+  updateUI(true);
 }
 
 function updateUI(withSave = true) {
-    if (withSave) {
-        saveProjects();
-    }
-    updateCurrentProjectUI();
-    updateProjectList();
+  if (withSave) {
+    saveProjects();
+  }
+  updateCurrentProjectUI();
+  updateProjectList();
 }
 
 /**
  * @description update current project UI
  */
 function updateCurrentProjectUI() {
-    let elm = $("#current");
-    if (currentProject) {
-        elm.html(currentProject.getCurrentProjectUIHtml())
-    } else {
-        elm.html("<h1>No Current Project Selected</h1>")
-    }
+  let elm = $("#current");
+  if (currentProject) {
+    elm.html(currentProject.getCurrentProjectUIHtml());
+  } else {
+    elm.html("<h1>No Current Project Selected</h1>");
+  }
 }
-
 
 function updateProjectList() {
-    let projectsContainer = $("#projects-container");
-    projectsContainer.empty();
-    let htmlContent = "";
-    for (let i = 0; i < projects.length; i++) {
-        htmlContent += projects[i].getElementHtml()
-    }
+  let projectsContainer = $("#projects-container");
+  projectsContainer.empty();
+  let htmlContent = "";
+  for (let i = 0; i < projects.length; i++) {
+    htmlContent += projects[i].getElementHtml();
+  }
 
-    projectsContainer.html(htmlContent);
+  projectsContainer.html(htmlContent);
 }
 
-
+/**
+ * @description add new project to project list
+ * @returns void
+ */
 function addProject() {
-    let name = window.prompt("Enter Project Name");
-    name = name.trim();
-    let foundProjectByName = projects.find(p => p.name === name)
-    if (foundProjectByName) {
-        alert("Project is already exists!");
-        return;
-    }
+  let name = window.prompt("Enter Project Name");
+  name = name.trim();
+  let foundProjectByName = projects.find((p) => p.name === name);
+  if (foundProjectByName) {
+    alert("Project is already exists!");
+    return;
+  }
 
-    let hourPrice = window.prompt("Enter Hour Price");
-    hourPrice = parseFloat(hourPrice);
-    projects.push(new Project(name, hourPrice));
+  let hourPrice = window.prompt("Enter Hour Price");
+  hourPrice = parseFloat(hourPrice);
 
+  let totalTimeInMinutes = window.prompt("Enter minutes done:") || "0";
+  let totalTimeInSeconds = parseInt(totalTimeInMinutes) * 60;
+
+  projects.push(new Project(name, hourPrice, totalTimeInSeconds));
+
+  updateUI(true);
+}
+
+/**
+ * @description a class that represents a project
+ */
+class Project {
+  _currentInterval = null;
+
+  constructor(name, hourPrice, totalTimeInSeconds = 0) {
+    this.name = name;
+    this.hourPrice = hourPrice;
+    this.totalTimeInSeconds = totalTimeInSeconds;
+  }
+
+  /**
+   * @description start project's timer
+   */
+  startInterval() {
+    this._currentInterval = true;
+    this.totalTimeInSeconds++;
     updateUI(true);
 
-}
+    this._currentInterval = setInterval(() => {
+      this.totalTimeInSeconds++;
+      updateUI(true);
+    }, 1000);
+  }
 
+  /**
+   * @description stop project's timer
+   */
+  stopInterval() {
+    clearInterval(this._currentInterval);
+    this._currentInterval = null;
+    updateUI(true);
+  }
 
-class Project {
-    constructor(name, hourPrice, totalTimeInSeconds = 0) {
-        this.name = name;
-        this.hourPrice = hourPrice;
-        this.totalTimeInSeconds = totalTimeInSeconds;
+  /**
+   * @description reset the total time spent
+   */
+  reset() {
+    this.totalTimeInSeconds = 0;
+  }
+
+  /**
+   * @description return the time info , hours, minutes and seconds
+   * @returns {{s: number, h: number, m: number}}
+   */
+  getTimeInfo() {
+    let remainingSeconds = this.totalTimeInSeconds % 3600;
+    return {
+      h: Math.floor(this.totalTimeInSeconds / 3600),
+      m: Math.floor(remainingSeconds / 60),
+      s: remainingSeconds % 60,
+    };
+  }
+
+  /**
+   * @description return the total price of the working hours
+   * @returns {number}
+   */
+  getTotalPrice() {
+    let totalHours = this.totalTimeInSeconds / 3600;
+    let totalPrice = this.hourPrice * totalHours;
+    return totalPrice.toFixed(2);
+  }
+
+  /**
+   * @description return the time and price in string format
+   * @returns {string}
+   */
+  getTimeAndPriceString() {
+    let timeInfo = this.getTimeInfo();
+    let totalPrice = this.getTotalPrice();
+
+    let hString = timeInfo.h.toString().padStart(4, "0");
+    let mString = timeInfo.m.toString().padStart(2, "0");
+    let sString = timeInfo.s.toString().padStart(2, "0");
+
+    return `${hString}h, ${mString}m, ${sString}s = ${totalPrice}$`;
+  }
+
+  // 0xWaleed
+
+  /**
+   *
+   * @default get the action button html code to render based on current project status
+   * @returns {string} action button html code (start/stop)
+   */
+  getActionButtonsHtml() {
+    if (this._currentInterval) {
+      return `<button onclick="stopCurrentProject()" class="red-btn">STOP</button>`;
+    } else {
+      return `<button onclick="startProject('${this.name}')" class="btn">START</button>`;
     }
+  }
 
-    /**
-     * @description reset the total time spent
-     */
-    reset() {
-        this.totalTimeInSeconds = 0;
-    }
-
-    /**
-     * @description return the time info , hours, minutes and seconds
-     * @returns {{s: number, h: number, m: number}}
-     */
-    getTimeInfo() {
-        return {
-            h: Math.floor(this.totalTimeInSeconds / 3600),
-            m: Math.floor(this.totalTimeInSeconds % 3600) / 60,
-            s: this.totalTimeInSeconds % 60,
-        }
-    }
-
-    /**
-     * @description return the total price of the working hours
-     * @returns {number}
-     */
-    getTotalPrice() {
-        let totalHours = this.totalTimeInSeconds / 3600;
-        return this.hourPrice * totalHours;
-    }
-
-
-    /**
-     * @description return the time and price in string format
-     * @returns {string}
-     */
-    getTimeAndPriceString() {
-        let timeInfo = this.getTimeInfo();
-        let totalPrice = this.getTotalPrice();
-
-        let hString = timeInfo.h.toString().padStart(4, '0');
-        let mString = timeInfo.m.toString().padStart(2, '0');
-        let sString = timeInfo.s.toString().padStart(2, '0');
-
-        return `${hString}h, ${mString}m, ${sString}s = ${totalPrice}$`;
-
-    }
-
-    // 0xWaleed
-
-    getCurrentProjectUIHtml() {
-        return `
+  /**
+   *  @description get the html code with project info for current project card
+   * @returns html code
+   */
+  getCurrentProjectUIHtml() {
+    return `
         <div>
             <span class="small-txt">Current Project</span>
             <div class="project-name">
@@ -198,14 +289,17 @@ class Project {
             <br/>
             <br/>
             <br/>
-            <button class="red-btn">STOP</button>
+            ${this.getActionButtonsHtml()}
         </div>
-        `
-    }
+        `;
+  }
 
-
-    getElementHtml() {
-        return `
+  /**
+   * @description returns the html code for the project card (used in project list)
+   * @returns html code
+   */
+  getElementHtml() {
+    return `
         <div class="project-card">
             <div class="project-info">
                 <h2>${this.name} (<span class="price">$${this.hourPrice}</span>)</h2>
@@ -214,11 +308,11 @@ class Project {
                 </div>
             </div>
             <div class="action-buttons">
-                <button onclick="startProject('${this.name}')" class="action-btn bg-primary">Start</buttono>
+                <button onclick="startProject('${this.name}')" class="action-btn bg-primary">Start</button>
                 <button onclick="resetProject('${this.name}')" class="action-btn bg-orange">Reset</button>
                 <button onclick="deleteProject('${this.name}')" class="action-btn bg-red">Delete</button>
             </div>
         </div>
-        `
-    }
+        `;
+  }
 }
