@@ -39,6 +39,25 @@ function loadProjects() {
 }
 
 /**
+ * @description calculate total money based on projects
+ */
+function calculateTotalMoney() {
+  let totalMoney = 0;
+  for (let i = 0; i < projects.length; i++) {
+    totalMoney += parseFloat(projects[i].getTotalPrice());
+  }
+  totalMoney = totalMoney.toFixed(2);
+  return totalMoney;
+}
+
+/**
+ * @description update total money ui
+ */
+function updateTotalMoneyUI() {
+  $("#total-money").html(`(Total = $${calculateTotalMoney()})`);
+}
+
+/**
  * @description stop the timer of the current project
  */
 function stopCurrentProject() {
@@ -130,6 +149,7 @@ function updateUI(withSave = true) {
   }
   updateCurrentProjectUI();
   updateProjectList();
+  updateTotalMoneyUI();
 }
 
 /**
@@ -243,6 +263,7 @@ class Project {
     let totalPrice = this.hourPrice * totalHours;
     return totalPrice.toFixed(2);
   }
+  // gnu emacs
 
   /**
    * @description return the time and price in string format
