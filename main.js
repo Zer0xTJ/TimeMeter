@@ -27,7 +27,7 @@ function loadProjects() {
    let projectsString = localStorage.getItem("projects");
    projects = projectsString != null ? JSON.parse(projectsString) : [];
    // convert objects to Project instances
-   projects = projects.map((obj) => new Project(obj.name, obj.hourPrice, obj.totalTimeInSeconds, obj.timeScaler ?? 0));
+   projects = projects.map((obj) => new Project(obj.name, obj.hourPrice, obj.totalTimeInSeconds, obj.timeScaler ?? 1));
    updateProjectList();
 
    // load current project
@@ -225,7 +225,7 @@ class Project {
    _currentInterval = null;
 
 
-   constructor(name, hourPrice, totalTimeInSeconds = 0, timeScaler = 0) {
+   constructor(name, hourPrice, totalTimeInSeconds = 0, timeScaler = 1) {
       this.name = name;
       this.hourPrice = hourPrice;
       this.totalTimeInSeconds = totalTimeInSeconds;
