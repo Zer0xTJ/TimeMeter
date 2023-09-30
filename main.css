@@ -145,7 +145,7 @@ h1 {
   padding-bottom: 2px;
   background: var(--primary-color);
   text-align: center;
-  vertical-align: center;
+  vertical-align: central;
   font-size: 28px;
   border-radius: 2px;
   cursor: pointer;
@@ -190,6 +190,17 @@ h1 {
   background-color: var(--secondary-orange);
 }
 
+
+.bg-purple {
+  transition: all 0.3s ease-in-out;
+  background-color: purple;
+  color: white;
+}
+
+.bg-purple:hover {
+  background-color: rebeccapurple;
+}
+
 .row {
   display: flex;
   flex-direction: row;
@@ -202,7 +213,6 @@ h1 {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  width: 50%;
   align-self: end;
   margin: 8px;
   gap: 4px;
